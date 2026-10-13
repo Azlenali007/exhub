@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ExchangeHub - Barter & Exchange Marketplace</title>
+    <meta name="description" content="Exchange and barter marketplace to trade products, multi-item offers with cash adjustment, negotiation, and smart matching." />
+    <meta property="og:title" content="ExchangeHub - Barter & Exchange Marketplace" />
+    <meta property="og:description" content="Exchange and barter marketplace to trade products, multi-item offers with cash adjustment, negotiation, and smart matching." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (CDN - Zero TS) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js (Lightweight interactivity) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <!-- SweetAlert2 (Premium alerts & dialogs) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
+                950: '#0f172a'
+              }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex flex-col" x-data="{ currentView: 'home', mobileMenu: false }">
+
+    <!-- Top Navigation Header (Matching Reference Screenshot) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20 gap-4">
+          
+          <!-- Logo -->
+          <button @click="currentView = 'home'" class="flex items-center gap-2.5 flex-shrink-0 group text-left">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </div>
+            <div class="leading-tight">
+              <span class="text-2xl font-black tracking-tight text-slate-900 flex items-center">
+                Exchange<span class="text-blue-600">Hub</span>
+              </span>
+            </div>
+          </button>
+
+          <!-- Search & Location Bar -->
+          <div class="hidden md:flex flex-1 max-w-2xl items-center mx-4">
+            <form onsubmit="handleHeroMatch(event)" class="flex w-full border border-slate-300 hover:border-slate-400 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 rounded-xl overflow-hidden bg-white shadow-sm transition">
+              <div class="flex-1 flex items-center px-3.5">
+                <svg class="w-4 h-4 text-slate-400 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="globalSearch" placeholder="Search for items, categories, or users..." class="w-full text-sm text-slate-800 placeholder-slate-400 outline-none py-2.5">
+              </div>
+              <div class="border-l border-slate-200 flex items-center px-3 bg-slate-50/70">
+                <svg class="w-4 h-4 text-slate-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <select id="globalCity" class="text-xs font-medium text-slate-700 bg-transparent outline-none cursor-pointer pr-2">
+                  <option value="All India">All India</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Mumbai">Mumbai</option>
+                  <option value="Bengaluru">Bengaluru</option>
+                  <option value="Pune">Pune</option>
+                  <option value="Lucknow">Lucknow</option>
+                </select>
+              </div>
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 flex items-center justify-center transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- Header Right Actions -->
+          <div class="flex items-center gap-3 sm:gap-4">
+            
+            <!-- Messages with 2 badge -->
+            <button @click="currentView = 'chat'" class="relative hidden sm:flex items-center gap-1.5 px-3 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl transition text-sm font-medium">
+              <div class="relative">
+                <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">2</span>
+              </div>
+              <span class="hidden lg:inline text-xs font-semibold">Messages</span>
+            </button>
+
+            <!-- Notifications Bell -->
+            <button onclick="Swal.fire({ title: 'Notifications', html: '<div class=\'text-left text-xs space-y-2\'><p class=\'p-2 bg-blue-50 rounded-lg\'><strong>Counter-Offer Received:</strong> Sneha Kapoor adjusted cash difference for TV.</p><p class=\'p-2 bg-slate-50 rounded-lg\'><strong>New Match:</strong> Hero Splendor bike matches your iPhone 13.</p></div>', confirmButtonColor: '#2563eb' })" class="relative p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white"></span>
+            </button>
+
+            <!-- Profile Avatar & Dropdown -->
+            <div class="relative" x-data="{ userMenu: false }">
+              <button @click="userMenu = !userMenu" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" alt="Rohit Sharma" class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/20">
+                <span class="hidden md:inline text-xs font-semibold text-slate-800">Rohit Sharma</span>
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              <div x-show="userMenu" @click.outside="userMenu = false" x-transition class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 text-xs">
+                <div class="px-4 py-2 border-b border-slate-100">
+                  <p class="font-bold text-slate-900">Rohit Sharma</p>
+                  <p class="text-slate-500 text-[11px]">rohit@example.com</p>
+                </div>
+                <button @click="currentView = 'dashboard'; userMenu = false" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-slate-700 hover:bg-slate-50">
+                  <span>📊</span> User Dashboard
+                </button>
+                <button @click="currentView = 'offers'; userMenu = false" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-slate-700 hover:bg-slate-50">
+                  <span>🤝</span> Multi-Item Offers
+                </button>
+                <button @click="currentView = 'chat'; userMenu = false" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-slate-700 hover:bg-slate-50">
+                  <span>💬</span> Messages & Chats
+                </button>
+                <button @click="currentView = 'admin'; userMenu = false" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-blue-600 hover:bg-blue-50 font-medium">
+                  <span>🛡️</span> Admin Panel
+                </button>
+              </div>
+            </div>
+
+            <!-- Post Your Item Button -->
+            <button @click="currentView = 'post'" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/25 flex items-center gap-1.5 transition">
+              <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Post Your Item</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Sub-navigation links -->
+        <nav class="hidden md:flex items-center gap-8 border-t border-slate-100 py-2.5 text-xs font-semibold text-slate-600">
+          <button @click="currentView = 'home'" :class="currentView === 'home' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Home</button>
+          <button @click="currentView = 'browse'" :class="currentView === 'browse' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Browse</button>
+          <button @click="currentView = 'offers'" :class="currentView === 'offers' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Exchange</button>
+          <button @click="currentView = 'chat'" :class="currentView === 'chat' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Negotiate (Chat)</button>
+          <button @click="currentView = 'post'" :class="currentView === 'post' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Post Item</button>
+          <button @click="currentView = 'dashboard'" :class="currentView === 'dashboard' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Dashboard</button>
+          <button @click="currentView = 'admin'" :class="currentView === 'admin' ? 'text-blue-600 border-b-2 border-blue-600 pb-1 font-bold' : 'hover:text-blue-600'">Admin Panel</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <div class="flex-1">
+
+      <!-- VIEW 1: HOMEPAGE (Default View matching screenshot) -->
+      <section x-show="currentView === 'home'" class="pb-20">
+        
+        <!-- Hero Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8">
+          <div class="relative bg-gradient-to-r from-slate-900 via-[#0f172a] to-blue-950 rounded-3xl overflow-hidden shadow-2xl p-6 sm:p-10 lg:p-12 text-white border border-slate-800">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+              
+              <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-300 text-xs font-semibold">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  India's #1 Barter & Smart Exchange Platform
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
+                  Apna Samaan Do,<br>
+                  Pasand Ka Samaan <span class="text-emerald-400">Lo!</span>
+                </h1>
+
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                  ExchangeHub par aap apne purane saman ko exchange karke apni pasand ki cheezein le sakte hain. Simple. Safe. Smart.
+                </p>
+
+                <!-- Interactive Matchmaker Search Box -->
+                <div class="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-xl border border-white/20 text-slate-800">
+                  <form id="heroMatchForm" onsubmit="handleHeroMatch(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    
+                    <div class="sm:col-span-5 bg-slate-50 hover:bg-slate-100 p-2.5 rounded-xl border border-slate-200 transition">
+                      <label class="block text-[10px] font-bold uppercase text-slate-400 tracking-wider">Mere paas kya hai?</label>
+                      <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-slate-400">📦</span>
+                        <select id="haveCategory" class="w-full text-xs font-semibold text-slate-800 bg-transparent outline-none cursor-pointer">
+                          <option value="Mobiles & Tablets">Mobiles & Tablets</option>
+                          <option value="Bikes & Scooters">Bikes & Scooters</option>
+                          <option value="Laptops & Computers">Laptops & Computers</option>
+                          <option value="TV & Home Appliances">TV & Home Appliances</option>
+                          <option value="Furniture">Furniture</option>
+                          <option value="Gaming">Gaming</option>
+                          <option value="Fashion & Lifestyle">Fashion & Lifestyle</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="sm:col-span-5 bg-slate-50 hover:bg-slate-100 p-2.5 rounded-xl border border-slate-200 transition">
+                      <label class="block text-[10px] font-bold uppercase text-slate-400 tracking-wider">Mujhe kya chahiye?</label>
+                      <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-slate-400">🎯</span>
+                        <select id="wantCategory" class="w-full text-xs font-semibold text-slate-800 bg-transparent outline-none cursor-pointer">
+                          <option value="Bikes & Scooters">Bikes & Scooters</option>
+                          <option value="Mobiles & Tablets">Mobiles & Tablets</option>
+                          <option value="Laptops & Computers">Laptops & Computers</option>
+                          <option value="TV & Home Appliances">TV & Home Appliances</option>
+                          <option value="Gaming">Gaming Consoles</option>
+                          <option value="Furniture">Furniture</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                      <button type="submit" class="w-full h-full min-h-[46px] bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/30 flex items-center justify-center transition">
+                        Find Matches
+                      </button>
+                    </div>
+
+                  </form>
+                </div>
+
+              </div>
+
+              <!-- Right Hero Visual Banner -->
+              <div class="lg:col-span-5 relative flex justify-center">
+                <div class="relative w-full max-w-md bg-gradient-to-br from-slate-800/80 to-slate-900/90 p-4 rounded-3xl border border-slate-700/60 shadow-2xl backdrop-blur-sm">
+                  
+                  <div class="absolute -top-3 right-6 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[11px] px-3.5 py-1 rounded-full shadow-lg uppercase tracking-wider flex items-center gap-1.5">
+                    <span>⚡</span> Exchange Not Just Sell
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 items-center pt-2">
+                    <div class="rounded-2xl overflow-hidden border border-slate-700 relative group aspect-square">
+                      <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=400&q=80" alt="iPhone 13" class="w-full h-full object-cover">
+                      <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 backdrop-blur-sm text-[10px] font-bold px-2 py-1 rounded-md text-white">
+                        iPhone 13 (₹25k)
+                      </div>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden border border-slate-700 relative group aspect-square">
+                      <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=400&q=80" alt="Hero Splendor Plus" class="w-full h-full object-cover">
+                      <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 backdrop-blur-sm text-[10px] font-bold px-2 py-1 rounded-md text-white">
+                        Bike / Splendor (₹45k)
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 bg-blue-600/20 border border-blue-500/40 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="text-blue-400 font-bold">⇄ Barter Swap</span>
+                      <span class="text-slate-300 text-[11px]">Phone + ₹20k difference for Bike</span>
+                    </div>
+                    <span class="text-emerald-400 font-bold text-[11px]">Direct Deal</span>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Row -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3 sm:gap-4 text-center">
+            
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-blue-50/70 border border-slate-100 hover:border-blue-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                📱
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-blue-600 line-clamp-1">Mobiles & Tablets</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-rose-50/70 border border-slate-100 hover:border-rose-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                🏍️
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-rose-600 line-clamp-1">Bikes & Scooters</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-indigo-50/70 border border-slate-100 hover:border-indigo-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                💻
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-indigo-600 line-clamp-1">Laptops & PC</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-teal-50/70 border border-slate-100 hover:border-teal-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                📺
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-teal-600 line-clamp-1">TV & Appliances</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-amber-50/70 border border-slate-100 hover:border-amber-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                🛋️
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-amber-600 line-clamp-1">Furniture</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-purple-50/70 border border-slate-100 hover:border-purple-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                🎮
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-purple-600 line-clamp-1">Gaming</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-pink-50/70 border border-slate-100 hover:border-pink-200 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                👕
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-pink-600 line-clamp-1">Fashion</span>
+            </button>
+
+            <button @click="currentView = 'browse'" class="group flex flex-col items-center p-3 rounded-2xl bg-white hover:bg-slate-100 border border-slate-100 hover:border-slate-300 transition shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm">
+                ➕
+              </div>
+              <span class="mt-2 text-xs font-semibold text-slate-700 group-hover:text-slate-900 line-clamp-1">More</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- 4 Feature Value Proposition Cards -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3.5 hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl flex-shrink-0">
+                🔄
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900">Smart Matching</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Get relevant exchange offers based on your item and needs.</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3.5 hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                🛡️
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900">Safe & Secure</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Verified users, secure chat and fraud protection.</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3.5 hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0">
+                🔗
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900">Flexible Options</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Direct exchange or exchange + cash difference.</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-3.5 hover:shadow-md transition">
+              <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl flex-shrink-0">
+                🇮🇳
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900">Nationwide</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">Connect with users across India with local meetup safety.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Trending Exchange Listings Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Trending Exchange Listings</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Explore popular items ready to be exchanged right now</p>
+            </div>
+            <button @click="currentView = 'browse'" class="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+              <span>View All</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            
+            <!-- Card 1: iPhone 13 (128GB) -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition duration-300 group">
+              <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden cursor-pointer" @click="currentView = 'detail'">
+                <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80" alt="iPhone 13" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
+                  <span>🔄</span> Wants Bike
+                </div>
+                <button onclick="toggleFavorite(1); event.stopPropagation();" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-slate-500 hover:text-rose-500 flex items-center justify-center shadow-sm transition">
+                  ♥
+                </button>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition cursor-pointer" @click="currentView = 'detail'">
+                    iPhone 13 (128GB)
+                  </h3>
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-base font-extrabold text-slate-900">₹25,000</span>
+                    <span class="text-[10px] text-slate-400 font-medium">(Estimated Value)</span>
+                  </div>
+                  <div class="mt-2 flex items-center text-[11px] text-slate-500">
+                    <svg class="w-3.5 h-3.5 text-slate-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Delhi, 5 km away</span>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">Wants Bike</span>
+                  <button onclick="openOfferModal(1, 'iPhone 13 (128GB)', 25000, 1)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm">
+                    Exchange
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Hero Splendor Plus -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition duration-300 group">
+              <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden cursor-pointer" @click="currentView = 'detail'">
+                <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80" alt="Hero Splendor Plus" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute top-3 left-3 bg-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
+                  <span>🔄</span> Wants TV
+                </div>
+                <button onclick="toggleFavorite(2); event.stopPropagation();" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-slate-500 hover:text-rose-500 flex items-center justify-center shadow-sm transition">
+                  ♥
+                </button>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition cursor-pointer" @click="currentView = 'detail'">
+                    Hero Splendor Plus
+                  </h3>
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-base font-extrabold text-slate-900">₹45,000</span>
+                    <span class="text-[10px] text-slate-400 font-medium">(Estimated Value)</span>
+                  </div>
+                  <div class="mt-2 flex items-center text-[11px] text-slate-500">
+                    <svg class="w-3.5 h-3.5 text-slate-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Lucknow, Central</span>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">Wants TV</span>
+                  <button onclick="openOfferModal(2, 'Hero Splendor Plus', 45000, 2)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm">
+                    Exchange
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Samsung 4K Smart TV -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition duration-300 group">
+              <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden cursor-pointer" @click="currentView = 'detail'">
+                <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80" alt="Samsung 4K Smart TV" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
+                  <span>🔄</span> Wants Laptop
+                </div>
+                <button onclick="toggleFavorite(3); event.stopPropagation();" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-slate-500 hover:text-rose-500 flex items-center justify-center shadow-sm transition">
+                  ♥
+                </button>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition cursor-pointer" @click="currentView = 'detail'">
+                    Samsung 4K Smart TV
+                  </h3>
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-base font-extrabold text-slate-900">₹32,000</span>
+                    <span class="text-[10px] text-slate-400 font-medium">(Estimated Value)</span>
+                  </div>
+                  <div class="mt-2 flex items-center text-[11px] text-slate-500">
+                    <svg class="w-3.5 h-3.5 text-slate-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Bengaluru, Koramangala</span>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">Wants Laptop</span>
+                  <button onclick="openOfferModal(3, 'Samsung 4K Smart TV', 32000, 3)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm">
+                    Exchange
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Dell Inspiron i5 -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition duration-300 group">
+              <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden cursor-pointer" @click="currentView = 'detail'">
+                <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80" alt="Dell Inspiron i5" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute top-3 left-3 bg-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
+                  <span>🔄</span> Wants Mobile
+                </div>
+                <button onclick="toggleFavorite(4); event.stopPropagation();" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-slate-500 hover:text-rose-500 flex items-center justify-center shadow-sm transition">
+                  ♥
+                </button>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition cursor-pointer" @click="currentView = 'detail'">
+                    Dell Inspiron i5
+                  </h3>
+                  <div class="mt-1 flex items-baseline gap-1">
+                    <span class="text-base font-extrabold text-slate-900">₹28,000</span>
+                    <span class="text-[10px] text-slate-400 font-medium">(Estimated Value)</span>
+                  </div>
+                  <div class="mt-2 flex items-center text-[11px] text-slate-500">
+                    <svg class="w-3.5 h-3.5 text-slate-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Pune, Shivajinagar</span>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">Wants Mobile</span>
+                  <button onclick="openOfferModal(4, 'Dell Inspiron i5', 28000, 4)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm">
+                    Exchange
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- VIEW 2: LISTING DETAIL VIEW (Top Right Screenshot) -->
+      <section x-show="currentView === 'detail'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="flex items-center justify-between pb-6">
+          <button @click="currentView = 'home'" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-blue-600 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <span>Back to Listings</span>
+          </button>
+          <div class="flex items-center gap-4 text-xs font-semibold text-slate-500">
+            <button onclick="shareListing()" class="flex items-center gap-1.5 hover:text-blue-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+              <span>Share</span>
+            </button>
+            <button onclick="reportListing()" class="flex items-center gap-1.5 hover:text-rose-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <span>Report</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-7 space-y-4">
+            <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3] relative">
+              <img id="mainListingImage" src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1000&q=80" alt="iPhone 13" class="w-full h-full object-cover">
+              <div class="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow flex items-center gap-1.5">
+                <span>🔄</span> Wants Bike / TV
+              </div>
+            </div>
+
+            <div class="grid grid-cols-5 gap-3">
+              <div class="rounded-xl overflow-hidden border-2 border-blue-600 aspect-square cursor-pointer"><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover"></div>
+              <div class="rounded-xl overflow-hidden border border-slate-200 aspect-square cursor-pointer"><img src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover"></div>
+              <div class="rounded-xl overflow-hidden border border-slate-200 aspect-square cursor-pointer"><img src="https://images.unsplash.com/photo-1591337676887-a217a6970a8a?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover"></div>
+              <div class="rounded-xl overflow-hidden border border-slate-200 aspect-square cursor-pointer"><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover"></div>
+              <div class="rounded-xl overflow-hidden border border-slate-200 aspect-square cursor-pointer"><img src="https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover"></div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+              <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">iPhone 13 (128GB)</h1>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span class="text-3xl font-black text-slate-900">₹25,000</span>
+                  <span class="text-xs text-slate-400 font-semibold">(Estimated Value)</span>
+                </div>
+
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1 rounded-full">Good Condition</span>
+                  <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1 rounded-full">128 GB</span>
+                  <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1 rounded-full">Black</span>
+                </div>
+
+                <div class="mt-3 flex items-center text-xs text-slate-500 gap-1.5">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  <span class="font-medium text-slate-700">Delhi, 5 km away</span>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">What I want in exchange</h3>
+                <div class="flex flex-wrap gap-2.5">
+                  <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-blue-100">
+                    <span>🏍️</span> Bike
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-teal-50 text-teal-700 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-teal-100">
+                    <span>📺</span> TV
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-indigo-100">
+                    <span>💻</span> Laptop
+                  </span>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Description</h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Well maintained iPhone 13, 128GB. No scratches, works perfectly, Original box and charger available. Interested in bike or TV (with or without extra cash).
+                </p>
+                <p class="text-[11px] text-slate-400 mt-2">Posted 2 days ago</p>
+              </div>
+
+              <div class="border-t border-slate-100 pt-5 flex items-center justify-between bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" alt="Rohit Sharma" class="w-12 h-12 rounded-full object-cover ring-2 ring-blue-500/20">
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="font-bold text-sm text-slate-900">Rohit Sharma</h4>
+                      <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        ✓ Verified User
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Member since Jan 2024 • 12 listings • 4.8 ★</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3 pt-2">
+                <button @click="currentView = 'chat'" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-sm py-3.5 rounded-2xl shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  <span>Chat with Seller</span>
+                </button>
+
+                <button onclick="openOfferModal(1, 'iPhone 13 (128GB)', 25000, 1)" class="w-full bg-white hover:bg-slate-50 border-2 border-blue-600 text-blue-600 font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 transition">
+                  <span>Make an Offer</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: NEGOTIATION CHAT (Bottom Middle Screenshot) -->
+      <section x-show="currentView === 'chat'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-[780px] grid grid-cols-1 md:grid-cols-12">
+          
+          <div class="md:col-span-5 lg:col-span-4 border-r border-slate-100 flex flex-col h-full bg-slate-50/50">
+            <div class="p-4 border-b border-slate-100 bg-white">
+              <div class="flex items-center justify-between mb-3">
+                <h1 class="text-xl font-black text-slate-900 tracking-tight">Messages</h1>
+              </div>
+              <div class="relative">
+                <input type="text" placeholder="Search chats..." class="w-full text-xs py-2.5 pl-9 pr-4 bg-slate-100 rounded-xl outline-none font-medium">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto divide-y divide-slate-100">
+              <div class="flex items-center gap-3 p-4 hover:bg-slate-100 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80" class="w-11 h-11 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-0.5"><h4 class="text-xs font-bold text-slate-900">Amit Verma</h4><span class="text-[10px] text-slate-400">2m</span></div>
+                  <p class="text-[11px] text-slate-600 truncate font-semibold">Is this still available?</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 p-4 bg-blue-50/80 border-r-4 border-blue-600 cursor-pointer">
+                <div class="relative">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-11 h-11 rounded-full object-cover">
+                  <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-0.5"><h4 class="text-xs font-bold text-slate-900">Sneha Kapoor</h4><span class="text-[10px] text-blue-600 font-bold">15m</span></div>
+                  <p class="text-[11px] text-slate-800 font-bold truncate">I can give you my TV + ₹3k</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 p-4 hover:bg-slate-100 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" class="w-11 h-11 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-0.5"><h4 class="text-xs font-bold text-slate-900">Rakesh Yadav</h4><span class="text-[10px] text-slate-400">1h</span></div>
+                  <p class="text-[11px] text-slate-500 truncate">Can you share more photos?</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 p-4 hover:bg-slate-100 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80" class="w-11 h-11 rounded-full object-cover">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-0.5"><h4 class="text-xs font-bold text-slate-900">Pooja Singh</h4><span class="text-[10px] text-slate-400">3h</span></div>
+                  <p class="text-[11px] text-slate-500 truncate">Deal done! Thanks</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="md:col-span-7 lg:col-span-8 flex flex-col h-full bg-white">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="relative">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-10 h-10 rounded-full object-cover">
+                  <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                    <span>Sneha Kapoor</span>
+                    <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Online</span>
+                  </h3>
+                  <p class="text-[11px] text-slate-500">Trading for iPhone 13 & Samsung 4K Smart TV</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="openCounterOfferModal(102, 3000)" class="bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-xs px-3.5 py-1.5 rounded-xl border border-blue-200 transition">
+                  Negotiate / Counter-Offer
+                </button>
+                <button onclick="confirmDealCompletion(102)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-sm transition">
+                  Confirm Exchange
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-amber-50/80 border-b border-amber-200/60 px-6 py-2 flex items-center justify-between text-xs text-amber-900">
+              <span class="font-semibold">🤝 Proposed Barter: Samsung 4K TV + ₹3,000 cash for your iPhone 13</span>
+              <span class="font-bold text-amber-700">Status: Countered</span>
+            </div>
+
+            <div id="chatStream" class="flex-1 overflow-y-auto p-6 space-y-4">
+              <div class="flex items-start gap-2.5 max-w-md">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-7 h-7 rounded-full object-cover">
+                <div class="bg-slate-100 p-3.5 rounded-2xl rounded-tl-none text-xs text-slate-800">
+                  <p>Hi, I saw your iPhone 13 (128GB). I have a 43" 4K Smart TV in excellent condition. Would you be interested in exchange?</p>
+                  <span class="text-[9px] text-slate-400 mt-1 block text-right">10:24 AM</span>
+                </div>
+              </div>
+
+              <div class="flex items-start justify-end gap-2.5 ml-auto max-w-md">
+                <div class="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-none text-xs">
+                  <p>Hello! Yes, I'm interested. Can you share photos and details of your TV?</p>
+                  <span class="text-[9px] text-blue-200 mt-1 block text-right">10:32 AM</span>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-2.5 max-w-md">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-7 h-7 rounded-full object-cover">
+                <div class="bg-slate-100 p-2 rounded-2xl rounded-tl-none text-xs text-slate-800 space-y-2">
+                  <div class="rounded-xl overflow-hidden aspect-video bg-black/5">
+                    <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80" alt="Samsung 4K TV" class="w-full h-full object-cover">
+                  </div>
+                  <p class="px-1.5 font-medium">This is my TV. It's 43 inch, 4K. Interested in your mobile. Can you add ₹3k?</p>
+                  <span class="text-[9px] text-slate-400 block px-1.5 text-right">3:45 PM</span>
+                </div>
+              </div>
+
+              <div class="flex items-start justify-end gap-2.5 ml-auto max-w-md">
+                <div class="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-none text-xs">
+                  <p>Yes, I can do that. I'll share photos of the mobile and we can finalize.</p>
+                  <span class="text-[9px] text-blue-200 mt-1 block text-right">3:52 PM</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-white">
+              <form id="sendMessageForm" onsubmit="sendChatMessage(event)" class="flex items-center gap-2">
+                <button type="button" onclick="attachPhotoMock()" class="p-2.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition">
+                  📎
+                </button>
+                <input type="text" id="chatInputText" placeholder="Type a message..." required class="flex-1 text-xs py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-md">
+                  ➤
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: POST YOUR ITEM WIZARD (Bottom Left Screenshot) -->
+      <section x-show="currentView === 'post'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <aside class="hidden lg:block lg:col-span-3 space-y-6">
+            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-1 text-xs font-semibold">
+              <button @click="currentView = 'dashboard'" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-700 hover:bg-slate-50"><span>🏠</span> Dashboard</button>
+              <button @click="currentView = 'dashboard'" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-700 hover:bg-slate-50"><span>📋</span> My Listings</button>
+              <button @click="currentView = 'chat'" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-700 hover:bg-slate-50"><span>💬</span> Messages</button>
+              <button @click="currentView = 'offers'" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-700 hover:bg-slate-50"><span>🔄</span> My Exchanges</button>
+            </div>
+          </aside>
+
+          <div class="lg:col-span-9 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm">
+            <div class="border-b border-slate-100 pb-6 mb-8">
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Post Your Item</h1>
+              <p class="text-xs text-slate-500 mt-1">List what you own to find the perfect barter or exchange partner.</p>
+            </div>
+
+            <form onsubmit="handlePostSubmit(event)" class="space-y-6">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">What do you want to do?</label>
+                <div class="grid grid-cols-2 gap-3 max-w-md">
+                  <button type="button" class="py-3 px-4 rounded-xl border border-slate-200 font-bold text-xs text-slate-600">🏷️ I want to sell</button>
+                  <button type="button" class="py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-sm">🔄 I want to exchange</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Category</label>
+                <select id="itemCategory" class="w-full text-xs font-medium p-3.5 rounded-xl border border-slate-300 outline-none">
+                  <option value="Mobiles & Tablets">Mobiles & Tablets</option>
+                  <option value="Bikes & Scooters">Bikes & Scooters</option>
+                  <option value="Laptops & Computers">Laptops & Computers</option>
+                  <option value="TV & Home Appliances">TV & Home Appliances</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Title</label>
+                <input type="text" id="itemTitle" value="iPhone 13 (128GB)" class="w-full text-xs p-3.5 rounded-xl border border-slate-300 outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Estimated Value (₹)</label>
+                <input type="number" id="itemValue" value="25000" class="w-full text-xs p-3.5 rounded-xl border border-slate-300 outline-none">
+              </div>
+
+              <div class="border-t border-slate-100 pt-6">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">What do you want in exchange?</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="text-xs font-bold">Bike / Scooter</span></label>
+                  <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="text-xs font-bold">TV</span></label>
+                  <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200"><input type="checkbox" checked class="w-4 h-4 text-blue-600"> <span class="text-xs font-bold">Laptop / Computer</span></label>
+                </div>
+              </div>
+
+              <div class="pt-6 flex justify-end">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-8 py-3.5 rounded-2xl shadow-md">Next &rarr;</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: MULTI-ITEM OFFERS & BARTER MANAGER -->
+      <section x-show="currentView === 'offers'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="flex items-center justify-between pb-6 border-b border-slate-200">
+          <div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Multi-Item Barter Proposals</h1>
+            <p class="text-xs text-slate-500 mt-1">Manage complex trades, counter-offers, and confirm deal completions.</p>
+          </div>
+          <button @click="currentView = 'browse'" class="bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl">+ Explore Listings to Trade</button>
+        </div>
+
+        <div class="mt-8 space-y-6">
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black">🔄</span>
+                <div>
+                  <h3 class="font-bold text-sm text-slate-900">Proposal #EXC-77419 (Countered by Sneha)</h3>
+                  <p class="text-[11px] text-slate-500">Sneha Kapoor offers 4K TV for your iPhone 13 with +₹3,000 cash difference</p>
+                </div>
+              </div>
+              <button @click="currentView = 'chat'" class="text-xs font-bold text-blue-600 hover:underline">Open Negotiation Chat &rarr;</button>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button onclick="Swal.fire('Declined', 'Proposal declined.', 'info')" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-700">Decline</button>
+              <button onclick="openCounterOfferModal(102, 3000)" class="px-4 py-2 border border-blue-600 rounded-xl text-xs font-bold text-blue-600">Counter-Offer</button>
+              <button onclick="Swal.fire('Accepted!', 'Items reserved.', 'success')" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md">Accept & Reserve</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: DASHBOARD -->
+      <section x-show="currentView === 'dashboard'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <aside class="lg:col-span-3 space-y-6">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm text-center">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" class="w-20 h-20 rounded-full mx-auto object-cover ring-4 ring-blue-500/20">
+              <h3 class="font-extrabold text-base text-slate-900 mt-3">Rohit Sharma</h3>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-3 py-0.5 rounded-full mt-1">✓ Verified User</span>
+              <p class="text-xs text-slate-500 mt-2">Delhi, India • 4.8 ★ Rating</p>
+            </div>
+          </aside>
+
+          <div class="lg:col-span-9 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold text-slate-400 uppercase">Active Listings</span>
+                <h3 class="text-2xl font-black text-slate-900 mt-1">3 Items</h3>
+              </div>
+              <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold text-slate-400 uppercase">Barters in Progress</span>
+                <h3 class="text-2xl font-black text-slate-900 mt-1">2 Deals</h3>
+              </div>
+              <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold text-slate-400 uppercase">Completed Trades</span>
+                <h3 class="text-2xl font-black text-slate-900 mt-1">9 Deals</h3>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+              <h3 class="font-bold text-base text-slate-900 mb-4">My Listed Items</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 border border-slate-100 rounded-2xl">
+                  <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=100&q=80" class="w-12 h-12 rounded-xl object-cover">
+                    <div><h4 class="font-bold text-xs text-slate-900">iPhone 13 (128GB)</h4><span class="text-[11px] text-slate-400">₹25,000 • Active</span></div>
+                  </div>
+                  <button @click="currentView = 'offers'" class="text-xs font-bold text-blue-600">View Offers (2) &rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 7: ADMIN PANEL -->
+      <section x-show="currentView === 'admin'" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 space-y-6 border border-slate-800">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <h1 class="text-xl font-black">ExchangeHub Administration</h1>
+              <p class="text-xs text-slate-400 mt-0.5">Zero-TypeScript PHP 8+ architecture with MySQL data storage</p>
+            </div>
+            <a href="/install/index.php" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl">Launch MySQL Installer &rarr;</a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div class="bg-slate-800 p-4 rounded-2xl"><span class="text-xs text-slate-400">Total Users</span><h3 class="text-xl font-bold mt-1">1,248</h3></div>
+            <div class="bg-slate-800 p-4 rounded-2xl"><span class="text-xs text-slate-400">Listings Active</span><h3 class="text-xl font-bold mt-1">482</h3></div>
+            <div class="bg-slate-800 p-4 rounded-2xl"><span class="text-xs text-slate-400">Barters Completed</span><h3 class="text-xl font-bold mt-1">319</h3></div>
+            <div class="bg-slate-800 p-4 rounded-2xl"><span class="text-xs text-slate-400">Reports</span><h3 class="text-xl font-bold mt-1">0 Pending</h3></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Multi-Item Barter Proposal Modal -->
+    <div id="multiItemOfferModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 p-6 sm:p-8">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Multi-Item Exchange Proposal</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-0.5" id="modalTargetTitle">Make Barter Offer</h3>
+          </div>
+          <button onclick="closeOfferModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">✕</button>
+        </div>
+
+        <form onsubmit="submitMultiOffer(event)" class="mt-6 space-y-6">
+          <input type="hidden" id="modalTargetListingId">
+          <input type="hidden" id="modalTargetUserId">
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Item You Are Requesting (Their Side)</label>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">🎯</span>
+                <div>
+                  <p class="font-bold text-sm text-slate-900" id="modalRequestedItemName">Item Name</p>
+                  <p class="text-xs text-slate-500">Estimated value</p>
+                </div>
+              </div>
+              <span class="font-black text-sm text-slate-900" id="modalRequestedItemVal">₹0</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Select Items You Own To Offer (Your Side)</label>
+              <span class="text-[11px] text-blue-600 font-semibold">Multi-item allowed</span>
+            </div>
+
+            <div class="space-y-2.5">
+              <label class="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer transition">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="my_items" value="1" data-val="25000" data-name="iPhone 13 (128GB)" checked onchange="recalculateOfferTotals()" class="w-4 h-4 text-blue-600 rounded">
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">iPhone 13 (128GB)</p>
+                    <p class="text-[11px] text-slate-400">Mobile & Tablets • Good Condition</p>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-slate-900">₹25,000</span>
+              </label>
+
+              <label class="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer transition">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="my_items" value="5" data-val="18000" data-name="Apple iPad 9th Gen" onchange="recalculateOfferTotals()" class="w-4 h-4 text-blue-600 rounded">
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">Apple iPad 9th Gen (64GB)</p>
+                    <p class="text-[11px] text-slate-400">Tablet • Excellent Condition</p>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-slate-900">₹18,000</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-blue-50/70 p-4 rounded-2xl border border-blue-200">
+            <label class="block text-xs font-bold text-blue-900 mb-1">Cash Difference Adjustment (Optional)</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-blue-800 mb-1">Who pays cash?</label>
+                <select id="modalCashPayer" onchange="recalculateOfferTotals()" class="w-full text-xs font-semibold bg-white border border-blue-200 rounded-lg p-2.5 outline-none">
+                  <option value="sender">I will pay extra cash (+)</option>
+                  <option value="receiver">Receiver should pay cash (-)</option>
+                  <option value="none">Direct Barter (₹0 Cash)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-blue-800 mb-1">Cash Amount (₹)</label>
+                <input type="number" id="modalCashAmount" value="5000" min="0" step="500" oninput="recalculateOfferTotals()" class="w-full text-xs font-bold bg-white border border-blue-200 rounded-lg p-2.5 outline-none">
+              </div>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-blue-200 flex items-center justify-between text-xs font-bold text-blue-900">
+              <span>Net Effective Value On Your Side:</span>
+              <span class="text-sm font-black text-blue-700" id="modalTotalCalculated">₹30,000</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Proposal Note / Message</label>
+            <textarea id="modalOfferMessage" rows="2" class="w-full text-xs p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. I have iPhone 13 + ₹5,000 cash ready for your motorcycle."></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeOfferModal()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">Cancel</button>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md">
+              Submit Multi-Item Offer &rarr;
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar (Matches bottom right screenshot) -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2.5 flex items-center justify-between z-40 shadow-lg">
+      <button @click="currentView = 'home'" class="flex flex-col items-center text-blue-600 gap-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-[10px] font-semibold">Home</span>
+      </button>
+      <button @click="currentView = 'post'" class="flex flex-col items-center text-slate-600 hover:text-blue-600 gap-0.5">
+        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center -mt-3 shadow-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <span class="text-[10px] font-semibold">Post</span>
+      </button>
+      <button @click="currentView = 'chat'" class="flex flex-col items-center text-slate-600 hover:text-blue-600 gap-0.5 relative">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        <span class="absolute top-0 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+        <span class="text-[10px] font-semibold">Chat</span>
+      </button>
+      <button @click="currentView = 'dashboard'" class="flex flex-col items-center text-slate-600 hover:text-blue-600 gap-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        <span class="text-[10px] font-semibold">Profile</span>
+      </button>
+    </div>
+
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/offers.js"></script>
+    <script>
+      function shareListing() {
+        navigator.clipboard.writeText(window.location.href);
+        Swal.fire({
+          title: 'Link Copied!',
+          text: 'Listing URL has been copied to your clipboard.',
+          icon: 'success',
+          timer: 1800,
+          showConfirmButton: false,
+          customClass: { popup: 'rounded-3xl' }
+        });
+      }
+      function reportListing() {
+        Swal.fire({
+          title: 'Report Listing',
+          input: 'select',
+          inputOptions: {
+            'fraud': 'Suspected scam or fraud',
+            'prohibited': 'Prohibited or illegal item',
+            'inaccurate': 'Inaccurate valuation or photos'
+          },
+          inputPlaceholder: 'Select report reason',
+          showCancelButton: true,
+          confirmButtonText: 'Submit Report',
+          confirmButtonColor: '#2563eb',
+          customClass: { popup: 'rounded-3xl' }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            Swal.fire('Report Submitted', 'Our moderation team will review this item within 2 hours.', 'success');
+          }
+        });
+      }
+      function sendChatMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('chatInputText');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const stream = document.getElementById('chatStream');
+        const bubble = document.createElement('div');
+        bubble.className = 'flex items-start justify-end gap-2.5 ml-auto max-w-md';
+        bubble.innerHTML = `
+          <div class="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-none text-xs">
+            <p>${text}</p>
+            <span class="text-[9px] text-blue-200 mt-1 block text-right">Just now</span>
+          </div>
+        `;
+        stream.appendChild(bubble);
+        input.value = '';
+        stream.scrollTop = stream.scrollHeight;
+      }
+      function attachPhotoMock() {
+        Swal.fire({
+          title: 'Attach Item Photo',
+          input: 'url',
+          inputValue: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=600&q=80',
+          showCancelButton: true,
+          confirmButtonText: 'Send Photo',
+          confirmButtonColor: '#2563eb',
+          customClass: { popup: 'rounded-3xl' }
+        }).then((res) => {
+          if (res.isConfirmed && res.value) {
+            const stream = document.getElementById('chatStream');
+            const bubble = document.createElement('div');
+            bubble.className = 'flex items-start justify-end gap-2.5 ml-auto max-w-md';
+            bubble.innerHTML = `
+              <div class="bg-blue-600 text-white p-2 rounded-2xl rounded-tr-none text-xs space-y-1.5">
+                <img src="${res.value}" class="rounded-xl max-h-48 w-full object-cover">
+                <p class="px-1 text-[11px]">Photo of item attached</p>
+                <span class="text-[9px] text-blue-200 block px-1 text-right">Just now</span>
+              </div>
+            `;
+            stream.appendChild(bubble);
+            stream.scrollTop = stream.scrollHeight;
+          }
+        });
+      }
+      function openCounterOfferModal(offerId, currentCash) {
+        Swal.fire({
+          title: 'Submit Counter-Offer',
+          html: `
+            <div class="text-left text-xs space-y-3 pt-2">
+              <p class="text-slate-600">Adjust the cash adjustment difference to counter Sneha's proposal:</p>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Cash Difference (₹)</label>
+                <input id="swalCounterCash" type="number" value="${currentCash}" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs outline-none">
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Send Counter-Offer',
+          confirmButtonColor: '#2563eb',
+          customClass: { popup: 'rounded-3xl' }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            const revised = document.getElementById('swalCounterCash').value;
+            Swal.fire('Counter-Offer Sent!', `Your revised proposal with ₹${revised} cash difference was sent.`, 'success');
+          }
+        });
+      }
+      function confirmDealCompletion(offerId) {
+        Swal.fire({
+          title: 'Confirm Exchange Handover?',
+          text: 'Confirm that both parties have met, inspected items, and completed the barter exchange.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Confirm Exchange Complete',
+          confirmButtonColor: '#059669',
+          customClass: { popup: 'rounded-3xl' }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            Swal.fire({
+              title: '🎉 Exchange Completed!',
+              text: 'Congratulations on your successful barter deal! Both items are marked completed and exchange count updated.',
+              icon: 'success',
+              confirmButtonColor: '#059669',
+              customClass: { popup: 'rounded-3xl' }
+            });
+          }
+        });
+      }
+      function handlePostSubmit(e) {
+        e.preventDefault();
+        const title = document.getElementById('itemTitle').value;
+        const val = document.getElementById('itemValue').value;
+        Swal.fire({
+          title: '🎉 Listing Published!',
+          text: `Your listing "${title}" valued at ₹${val} is now live and tradeable!`,
+          icon: 'success',
+          confirmButtonColor: '#2563eb',
+          customClass: { popup: 'rounded-3xl' }
+        });
+      }
+    </script>
+  </body>
+</html>

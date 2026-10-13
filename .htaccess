@@ -1,0 +1,17 @@
+# Apache configuration for ExchangeHub Core PHP
+RewriteEngine On
+RewriteBase /
+
+# Protect sensitive directories
+RewriteRule ^config/ - [F,L]
+RewriteRule ^database/ - [F,L]
+
+# Prevent directory listings
+Options -Indexes
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

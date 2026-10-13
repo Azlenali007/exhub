@@ -1,0 +1,6 @@
+{
+  "name": "ExchangeHub - Barter & Exchange Marketplace",
+  "description": "Exchange and barter marketplace to trade products, multi-item offers with cash adjustment, negotiation, and smart matching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
